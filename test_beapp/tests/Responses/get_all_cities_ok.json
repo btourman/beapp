@@ -1,0 +1,23 @@
+[
+  {
+    "id": "018d3c56-bb85-76b5-a471-c1ba8bc0cc2c",
+    "name": "Angers",
+    "longitude": -0.563166,
+    "latitude": 47.478419,
+    "status": false
+  },
+  {
+    "id": "018d3c56-bb85-76b5-a471-c1ba8c3c88ed",
+    "name": "Nantes",
+    "longitude": -1.553621,
+    "latitude": 47.218371,
+    "status": false
+  },
+  {
+    "id": "018d3c56-bb85-76b5-a471-c1ba8e5ccd19",
+    "name": "Rennes",
+    "longitude": -1.553621,
+    "latitude": 47.218374,
+    "status": false
+  }
+]

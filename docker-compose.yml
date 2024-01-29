@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:5173"
+    environment:
+      VITE_REST_URL: http://localhost:8000
+    links:
+      - symfony
+
+  symfony:
+    build:
+      context: ./test_beapp
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: dev
+      APP_SECRET: 4a6d8a460ce76c96b76adce48739ef43
+      DATABASE_URL: "mysql://root:root@db/tap_and_go"
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+      JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+      JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
+      JWT_PASSPHRASE: 787ebce50c6b8fc5814cbdfe450df4c77ce400a7cfffe803b2ed356713fbf6aa
+    links:
+      - db
+    command: sh -c "symfony console doctrine:migrations:migrate -n && php bin/console doctrine:schema:update --force && symfony console doctrine:fixtures:load -n && symfony server:start"
+
+  db:
+    image: mariadb:10.6.16
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: tap_and_go
+
