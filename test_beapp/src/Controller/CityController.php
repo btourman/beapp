@@ -25,7 +25,7 @@ class CityController extends AbstractController implements LoggerAwareInterface
     #[Route('', name: 'city_index', methods: ['GET'])]
     public function index(CityRepository $cityRepository, LoggerInterface $logger): JsonResponse
     {
-        $logger->info('Get all city');
+        $logger->info('[City] Get all city');
 
         $cities = $cityRepository->findAll();
 
@@ -35,6 +35,7 @@ class CityController extends AbstractController implements LoggerAwareInterface
     #[Route('', name: 'city_new', methods: ['POST'])]
     public function new(#[MapRequestPayload] City $city, EntityManagerInterface $entityManager): JsonResponse
     {
+        $this->logger->info('[City] Create new city');
         $entityManager->persist($city);
         $entityManager->flush();
 
@@ -44,13 +45,14 @@ class CityController extends AbstractController implements LoggerAwareInterface
     #[Route('/{id}', name: 'city_show', methods: ['GET'])]
     public function show(City $city): JsonResponse
     {
+        $this->logger->info('[City] Get city '.$city->getId());
         return $this->json($city);
     }
 
     #[Route('/{id}', name: 'city_edit', methods: ['PUT', 'PATCH'])]
     public function edit(#[MapRequestPayload] CityDto $cityDto, Uuid $id, EntityManagerInterface $entityManager, CityRepository $cityRepository, MergeService $mergeService): JsonResponse
     {
-        $this->logger->error('Edit city '.$id);
+        $this->logger->info('[City] Edit city '.$id);
 
         $updatedObject = $cityRepository->find($id);
 
@@ -73,6 +75,7 @@ class CityController extends AbstractController implements LoggerAwareInterface
     #[Route('/{id}', name: 'city_delete', methods: ['DELETE'])]
     public function delete(City $city, EntityManagerInterface $entityManager): Response
     {
+        $this->logger->info('[City] Delete city '.$city->getId());
         $entityManager->remove($city);
         $entityManager->flush();
 

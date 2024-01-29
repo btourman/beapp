@@ -25,20 +25,24 @@ class StationController extends AbstractController implements LoggerAwareInterfa
     private LoggerInterface $logger;
 
     #[Route('', name: 'station_index', methods: ['GET'])]
-    public function index(StationRepository $stationRepository, LoggerInterface $logger, #[MapQueryParameter] string $cityId = null): JsonResponse
+    public function index(StationRepository $stationRepository, #[MapQueryParameter] string $cityId = null): JsonResponse
     {
-        $logger->info('Get all stations');
-
         if ($cityId) {
-            return $this->json($stationRepository->findBy(['city' => $cityId]));
+            $this->logger->info('[Station] Get all stations filter by city id '.$cityId);
+            $stations = $stationRepository->findBy(['city' => $cityId]);
+        } else {
+            $this->logger->info('[Station] Get all stations');
+            $stations = $stationRepository->findAll();
         }
 
-        return $this->json($stationRepository->findAll());
+        return $this->json($stations, headers: ['X-Total-Count' => count($stations)]);
     }
 
     #[Route('', name: 'station_new', methods: ['POST'])]
     public function new(#[MapRequestPayload] Station $station, CityRepository $cityRepository, EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
+        $this->logger->info('[Station] Create new station');
+
         $city = $cityRepository->find($request->getPayload()->get('city'));
         $station->setCity($city);
 
@@ -51,13 +55,14 @@ class StationController extends AbstractController implements LoggerAwareInterfa
     #[Route('/{id}', name: 'station_show', methods: ['GET'])]
     public function show(Station $station): JsonResponse
     {
+        $this->logger->info('[Station] Get station '.$station->getId());
         return $this->json($station);
     }
 
     #[Route('/{id}', name: 'station_edit', methods: ['PUT', 'PATCH'])]
     public function edit(#[MapRequestPayload] StationDto $stationDto, Uuid $id, EntityManagerInterface $entityManager, StationRepository $stationRepository, CityRepository $cityRepository, MergeService $mergeService): JsonResponse
     {
-        $this->logger->error('Edit station '.$id);
+        $this->logger->info('[Station] Edit station '.$id);
 
         $station = $stationRepository->find($id);
 
@@ -80,6 +85,7 @@ class StationController extends AbstractController implements LoggerAwareInterfa
     #[Route('/{id}', name: 'station_delete', methods: ['DELETE'])]
     public function delete(Station $station, EntityManagerInterface $entityManager): Response
     {
+        $this->logger->info('[Station] Delete station '.$station->getId());
         $entityManager->remove($station);
         $entityManager->flush();
 
