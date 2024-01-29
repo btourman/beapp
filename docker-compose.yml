@@ -28,7 +28,8 @@ services:
       JWT_PASSPHRASE: 787ebce50c6b8fc5814cbdfe450df4c77ce400a7cfffe803b2ed356713fbf6aa
     links:
       - db
-    command: sh -c "symfony console doctrine:migrations:migrate -n && php bin/console doctrine:schema:update --force && symfony console doctrine:fixtures:load -n && symfony server:start"
+    command: sh -c "composer require symfony/runtime && symfony console doctrine:database:drop --force && symfony console doctrine:database:create && symfony console doctrine:migrations:migrate -n && php bin/console doctrine:schema:update --force --complete && symfony console doctrine:fixtures:load -n && symfony serve:start"
+    restart: always
 
   db:
     image: mariadb:10.6.16
